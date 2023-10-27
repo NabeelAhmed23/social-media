@@ -37,13 +37,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { User } from "@prisma/client";
 
 interface SingleCommentProps {
   comment: CommentWithUser;
   id: number;
+  user: User;
 }
 
-export function SingleComment({ comment, id }: SingleCommentProps) {
+export function SingleComment({ comment, id, user }: SingleCommentProps) {
   const [showInput, setShowInput] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -53,6 +55,8 @@ export function SingleComment({ comment, id }: SingleCommentProps) {
       comment: comment.comment || "",
     },
   });
+
+  const isMyComment = user.id === comment.user.id;
 
   async function onCommentSubmit(values: z.infer<typeof commentSchema>) {
     const url = queryString.stringifyUrl({
@@ -162,28 +166,30 @@ export function SingleComment({ comment, id }: SingleCommentProps) {
           </div>
         )}
       </div>
-      <Popover>
-        <PopoverTrigger>
-          <MoreVertical className="w-5 h-5" />
-        </PopoverTrigger>
-        <PopoverContent className="p-0 max-w-[160px]">
-          <Button
-            variant="ghost"
-            className="w-full justify-start font-light"
-            onClick={() => setShowInput(true)}
-          >
-            <Edit className="w-5 h-5 mr-2" /> Edit
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start font-light"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="w-5 h-5 mr-2" />
-            Delete
-          </Button>
-        </PopoverContent>
-      </Popover>
+      {isMyComment && (
+        <Popover>
+          <PopoverTrigger>
+            <MoreVertical className="w-5 h-5" />
+          </PopoverTrigger>
+          <PopoverContent className="p-0 max-w-[160px]">
+            <Button
+              variant="ghost"
+              className="w-full justify-start font-light"
+              onClick={() => setShowInput(true)}
+            >
+              <Edit className="w-5 h-5 mr-2" /> Edit
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full justify-start font-light"
+              onClick={() => setOpen(true)}
+            >
+              <Trash className="w-5 h-5 mr-2" />
+              Delete
+            </Button>
+          </PopoverContent>
+        </Popover>
+      )}
 
       <AlertDialog open={open} onOpenChange={() => setOpen(false)}>
         <AlertDialogContent>

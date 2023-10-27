@@ -9,9 +9,10 @@ import { useModal } from "@/hooks/use-modal";
 
 interface ProfileUserInfoProps {
   user: User;
+  isMyProfile: boolean;
 }
 
-export function ProfileUserInfo({ user }: ProfileUserInfoProps) {
+export function ProfileUserInfo({ user, isMyProfile }: ProfileUserInfoProps) {
   const { onOpen } = useModal();
   return (
     <div className="px-6 -mt-20 w-full">
@@ -31,18 +32,20 @@ export function ProfileUserInfo({ user }: ProfileUserInfoProps) {
               </div>
             )}
           </div>
-          <Button
-            className="absolute rounded-full p-2 right-1 bottom-1 z-[2]"
-            onClick={() =>
-              onOpen("uploadImage", {
-                apiUrl: "/api/update",
-                title: "Upload your profile photo",
-                type: "profileImageUrl",
-              })
-            }
-          >
-            <Camera />
-          </Button>
+          {isMyProfile && (
+            <Button
+              className="absolute rounded-full p-2 right-1 bottom-1 z-[2]"
+              onClick={() =>
+                onOpen("uploadImage", {
+                  apiUrl: "/api/update",
+                  title: "Upload your profile photo",
+                  type: "profileImageUrl",
+                })
+              }
+            >
+              <Camera />
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-1">
@@ -52,9 +55,11 @@ export function ProfileUserInfo({ user }: ProfileUserInfoProps) {
             </p>
             <p>{user.email}</p>
           </div>
-          <Button>
-            <Pencil className="text-white w-4 h-4 mr-2" /> Edit Profile
-          </Button>
+          {isMyProfile && (
+            <Button>
+              <Pencil className="text-white w-4 h-4 mr-2" /> Edit Profile
+            </Button>
+          )}
         </div>
       </div>
     </div>

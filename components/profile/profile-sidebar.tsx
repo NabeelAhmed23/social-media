@@ -5,7 +5,12 @@ import { Calendar, Clock, Mail, User as UserIcon } from "lucide-react";
 import ProfileAboutButton from "./profile-about-button";
 import moment from "moment";
 
-export function ProfileSidebar({ user }: { user: User & { about?: string } }) {
+interface ProfileSidebarProps {
+  user: User;
+  isMyProfile: boolean;
+}
+
+export function ProfileSidebar({ user, isMyProfile }: ProfileSidebarProps) {
   return (
     <div>
       <div className="sticky top-20">
@@ -31,7 +36,7 @@ export function ProfileSidebar({ user }: { user: User & { about?: string } }) {
                 <Clock className="w-5 h-5 mr-2" /> Joined{" "}
                 {moment(new Date(user.createdAt)).fromNow()}
               </div>
-              <ProfileAboutButton user={user} />
+              <ProfileAboutButton user={user} isMyProfile={isMyProfile} />
             </div>
           </CardContent>
         </Card>

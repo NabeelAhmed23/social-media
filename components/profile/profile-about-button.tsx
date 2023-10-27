@@ -25,7 +25,15 @@ const aboutSchema = z.object({
   }),
 });
 
-export default function ProfileAboutButton({ user }: { user: User }) {
+interface ProfileAboutButtonProps {
+  user: User;
+  isMyProfile: boolean;
+}
+
+export default function ProfileAboutButton({
+  user,
+  isMyProfile,
+}: ProfileAboutButtonProps) {
   const [showInput, setShowInput] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof aboutSchema>>({
@@ -87,9 +95,13 @@ export default function ProfileAboutButton({ user }: { user: User }) {
   return (
     <div>
       {!user?.about ? (
-        <Button className="w-full" onClick={() => setShowInput(true)}>
-          Add About
-        </Button>
+        <>
+          {isMyProfile && (
+            <Button className="w-full" onClick={() => setShowInput(true)}>
+              Add About
+            </Button>
+          )}
+        </>
       ) : (
         <div className="flex items-start">
           <div className="w-5 h-5 mr-2">

@@ -7,6 +7,5 @@ export default function currentRoute() {
   const fullUrl = headersList.get("referer") || "";
   const [, pathname] =
     fullUrl.match(new RegExp(`https?:\/\/${domain}(.*)`)) || [];
-  console.log(domain, fullUrl);
   return pathname;
 }

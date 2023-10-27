@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Post, User } from "@prisma/client";
+import { Comment as CommentModel, Post, User } from "@prisma/client";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   Edit,
@@ -16,22 +16,22 @@ import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { Comment } from "../profile/post-components/comment";
 import { CommentsList } from "../profile/post-components/comments-list";
-import { db } from "@/lib/db";
+import { CommentWithUser } from "@/types";
+import currentUser from "@/hooks/current-user";
 
 interface PostItemProps {
   user: User;
   post: Post;
+  comments: CommentWithUser[];
 }
 
-export default async function PostItem({ user, post }: PostItemProps) {
-  const comments = await db.comment.findMany({
-    where: {
-      postId: post.id,
-    },
-    include: {
-      user: true,
-    },
-  });
+export default async function PostItem({
+  user,
+  post,
+  comments,
+}: PostItemProps) {
+  const currentUserObj = await currentUser();
+  const isMyProfile = currentUserObj?.id === user.id;
 
   return (
     <Card>
@@ -57,21 +57,23 @@ export default async function PostItem({ user, post }: PostItemProps) {
             </span>
           </div>
         </div>
-        <Popover>
-          <PopoverTrigger>
-            <MoreVertical className="w-5 h-5" />
-          </PopoverTrigger>
-          <PopoverContent className="p-1 w-40">
-            <Button variant="ghost" className="w-full justify-start">
-              <Edit className="w-5 h-5 mr-2" />
-              Edit post
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Trash className="w-5 h-5 mr-2" />
-              Delete post
-            </Button>
-          </PopoverContent>
-        </Popover>
+        {isMyProfile && (
+          <Popover>
+            <PopoverTrigger>
+              <MoreVertical className="w-5 h-5" />
+            </PopoverTrigger>
+            <PopoverContent className="p-1 w-40">
+              <Button variant="ghost" className="w-full justify-start">
+                <Edit className="w-5 h-5 mr-2" />
+                Edit post
+              </Button>
+              <Button variant="ghost" className="w-full justify-start">
+                <Trash className="w-5 h-5 mr-2" />
+                Delete post
+              </Button>
+            </PopoverContent>
+          </Popover>
+        )}
       </CardHeader>
       <CardContent className="px-0">
         {post.postImage && (
@@ -118,7 +120,7 @@ export default async function PostItem({ user, post }: PostItemProps) {
         </div>
         <div className="w-full">
           <CommentsList comments={comments} id={post.id} />
-          <Comment user={user} id={post.id} />
+          <Comment user={currentUserObj as User} id={post.id} />
         </div>
       </CardFooter>
     </Card>

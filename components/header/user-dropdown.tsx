@@ -25,7 +25,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
 
   function logout() {
     deleteCookie("x-auth-token");
-    router.refresh();
+    router.push("/");
   }
 
   return (

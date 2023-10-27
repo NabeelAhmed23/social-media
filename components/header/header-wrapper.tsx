@@ -4,7 +4,6 @@ import { Button } from "../ui/button";
 import { Bell } from "lucide-react";
 import { UserDropdown } from "./user-dropdown";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import currentUser from "@/hooks/current-user";
 
 export async function HeaderWrapper() {

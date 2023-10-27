@@ -54,9 +54,8 @@ export const LoginForm = () => {
         url: "/api/login",
       });
       const res = await axios.post(url, values);
-
-      setCookie("x-auth-token", res.data.token, 1);
       router.push("/");
+      setCookie("x-auth-token", res.data.token, 1);
     } catch (error: any) {
       setError(error.response.data.error);
     }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   let token = req.cookies.has("x-auth-token");
+
   if (req.nextUrl.pathname === "/login" && token) {
     return NextResponse.redirect(new URL("/", req.url));
   }

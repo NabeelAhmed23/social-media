@@ -9,14 +9,13 @@ import "@uploadthing/react/styles.css";
 interface FileUploadProps {
   onChange: (url?: string) => void;
   value: string;
-  endpoint?: "displayImage" | "coverImage";
 }
 
-export function FileUpload({ endpoint, value, onChange }: FileUploadProps) {
+export function FileUpload({ value, onChange }: FileUploadProps) {
   const fileType = value?.split(".").pop();
   if (value && fileType !== "pdf") {
     return (
-      <div className="relative w-20 h-20">
+      <div className="relative w-20 h-20 my-6">
         <Image fill src={value} alt="Upload" className="rounded-full" />
         <button
           className="rounded-full bg-rose-500 text-white p-1 absolute top-0 right-0 shadow-sm"
@@ -30,7 +29,7 @@ export function FileUpload({ endpoint, value, onChange }: FileUploadProps) {
 
   if (value && fileType === "pdf") {
     return (
-      <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
+      <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10 my-6">
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
         <a
           href={value}

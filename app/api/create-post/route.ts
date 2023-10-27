@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { db } from "@/lib/db";
+import jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
+import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -17,19 +17,23 @@ export async function POST(req: Request) {
     }
 
     const user = jwt.decode(token) as User;
-    const { imageUrl } = await req.json();
-    await db.user.update({
-      where: {
-        id: user?.id,
-      },
-      data: {
-        profileImageUrl: imageUrl,
-      },
-    });
+    const { content, imageUrl } = await req.json();
 
-    return NextResponse.json({
-      message: "Profile Image has been successfully updated",
+    if (!content && !imageUrl) {
+      return NextResponse.json(
+        { error: "Message and Image both cannot be empty" },
+        { status: 400 }
+      );
+    }
+
+    const post = await db.post.create({
+      data: {
+        content,
+        postImage: imageUrl,
+        userId: user.id,
+      },
     });
+    return NextResponse.json({ message: "New post has been created", post });
   } catch (error) {
     return new NextResponse("Internal server error", { status: 500 });
   }

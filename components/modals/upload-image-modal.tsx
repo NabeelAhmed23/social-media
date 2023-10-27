@@ -1,15 +1,12 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { Camera } from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog";
 import { FileUpload } from "../file-upload";
 import { useEffect, useState } from "react";
@@ -17,32 +14,38 @@ import { useEffect, useState } from "react";
 import axios from "@/service/axios";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/use-toast";
+import { useModal } from "@/hooks/use-modal";
 
-interface UploadImageModalProps {
-  apiEndpoint: string;
-  children: React.ReactNode;
-  title: string;
-}
-
-export function UploadImageModal({
-  apiEndpoint,
-  children,
-  title,
-}: UploadImageModalProps) {
+export function UploadImageModal() {
   const [imageUrl, setImageUrl] = useState("");
+  const { isOpen, data, type, onClose } = useModal();
+
+  const open = isOpen && type === "uploadImage";
   const router = useRouter();
-  async function onCoverSave() {
+  async function onSubmit() {
+    if (typeof data?.onImageSubmit !== "undefined") {
+      data.onImageSubmit(imageUrl);
+    }
     try {
-      await axios.post(apiEndpoint, { imageUrl });
+      await axios.post(data.apiUrl as string, {
+        data: imageUrl,
+        type: data.type,
+      });
       toast({
         title: "Success",
         description: "Your image has been successfully uploaded",
       });
-
+      setImageUrl("");
       router.refresh();
+      onClose();
     } catch (error: any) {
       console.log(error.message);
     }
+  }
+
+  function closeModal() {
+    setImageUrl("");
+    onClose();
   }
 
   useEffect(
@@ -52,11 +55,10 @@ export function UploadImageModal({
     []
   );
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={closeModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>{data.title}</DialogTitle>
 
           <div className="grid place-items-center mt-4">
             <FileUpload
@@ -65,10 +67,10 @@ export function UploadImageModal({
             />
           </div>
           <DialogFooter className="pt-4 flex justify-end">
-            <DialogClose asChild>
-              <Button variant="ghost">Cancel</Button>
-            </DialogClose>
-            <Button disabled={!imageUrl} onClick={onCoverSave}>
+            <Button variant="ghost" onClick={closeModal}>
+              Cancel
+            </Button>
+            <Button disabled={!imageUrl} onClick={onSubmit}>
               Save
             </Button>
           </DialogFooter>

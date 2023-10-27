@@ -4,31 +4,15 @@ import { Button } from "../ui/button";
 import { Bell } from "lucide-react";
 import { UserDropdown } from "./user-dropdown";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import jwt from "jsonwebtoken";
-import { User } from "@prisma/client";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { exclude } from "../../lib/helper";
+import currentUser from "@/hooks/current-user";
 
 export async function HeaderWrapper() {
-  const { value: token } = cookies().get("x-auth-token") as RequestCookie;
-
-  if (!token) redirect("/login");
-
-  const { id } = jwt.decode(token) as User;
-
-  const userObj = await db.user.findFirst({
-    where: {
-      id: id,
-    },
-  });
-
-  const user = exclude(userObj, ["password"]) as User;
+  const user = await currentUser();
+  if (!user) return null;
 
   return (
-    <header className="px-4 py-4 bg-black/80 sticky top-0" id="header">
+    <header className="px-4 py-4 bg-foreground sticky top-0 z-10" id="header">
       <div className="w-11/12 mx-auto">
         <div className="flex items-center justify-between">
           <div>

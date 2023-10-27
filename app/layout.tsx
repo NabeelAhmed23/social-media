@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+
 import "./globals.css";
 import { HeaderWrapper } from "@/components/header/header-wrapper";
 import { Toaster } from "@/components/ui/toaster";
+import ModalProviders from "@/providers/modal-providers";
+import { cn } from "@/lib/utils";
+import currentRoute from "@/hooks/current-route";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -19,11 +23,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = currentRoute();
+
   return (
-    <html lang="en">
-      <body className={poppins.className}>
-        <HeaderWrapper />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(poppins.className, "bg-slate-50")}>
+        {pathname !== "/login" && <HeaderWrapper />}
+        <ModalProviders />
+        <main className="relative z-[1]">{children}</main>
         <Toaster />
       </body>
     </html>

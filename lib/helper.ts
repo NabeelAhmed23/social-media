@@ -25,12 +25,6 @@ export function getCookie(cname: string) {
   return "";
 }
 
-// export function exclude<T, Key extends keyof T>(obj: T, arr: Key[]) {
-//   return Object.fromEntries(
-//     Object.entries(obj).filter(([i]) => !arr.includes(i))
-//   );
-// }
-
 export function exclude(user: any, keys: any) {
   const filteredEntries = Object.entries(user).filter(
     ([key]) => !keys.includes(key)
